@@ -41,6 +41,15 @@ Aunque estos archivos se creen desde esta fase, es normal que algunos se vayan c
 
 Durante esta etapa también vamos a aprender a manejar situaciones que pueden ocurrir en un scraper real, por ejemplo cuando una página no responde, cuando la tabla que buscamos cambia de lugar o cuando la información no viene completa. La idea es que el scraper pueda detectar esos casos y reaccionar de una forma controlada, en lugar de simplemente fallar.
 
+1. wikipedia_scraper.py
+          │
+          ▼
+          
+2. parsers.py
+          │
+          ▼
+3. normalizers.py
+
 **Dependencias:** o herramientas de esta fase:
 
 requests para descargar el contenido de la página.
