@@ -101,19 +101,40 @@ def clean_standings_values(df):
     df = convert_numeric_columns(df)
     return df
 
+
+#GUARDAR EN JSON LOS DATOS LIMPIOS
+#funcion dos parametros el dataframe y output_path  que es la ruta donde vamos a guardar momentaneamente
+# Paso 44: usamos to_json de pandas.
+    # orient="records" guarda una lista de objetos JSON.
+    # force_ascii=False conserva caracteres especiales correctamente.
+    # indent=2 deja el archivo bien formateado y facil de leer.
+
+def save_dataframe_to_json(df, output_path):
+    df.to_json( output_path,
+    orient="records",
+    force_ascii=False,
+    indent=2)
+
+
+
 if __name__ == "__main__":
+   if __name__ == "__main__":
     from wikipedia_scraper import download_group_d_page
     from parsers import find_standings_table
 
     html = download_group_d_page()
+
     standings_table = find_standings_table(html)
 
     df = convert_html_to_dataframe(standings_table)
+
     df = clean_standing_dataframe(df)
+
     df = clean_standings_values(df)
 
-    print("\n=== DataFrame limpio ===")
+    save_dataframe_to_json(df, "data/group_d_standings.json")
+
     print(df.head())
 
-    print("\nTipos de datos:")
-    print(df.dtypes)
+    print("JSON guardado en data/group_d_standings.json")
+
