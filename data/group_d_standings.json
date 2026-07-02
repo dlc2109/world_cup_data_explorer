@@ -10,7 +10,10 @@
     "goals_against":4,
     "goal_difference":4,
     "points":6,
-    "qualification":"Advance to knockout stage"
+    "qualification":"Advance to knockout stage",
+    "group_name":"D",
+    "source_url":"https:\/\/en.wikipedia.org\/wiki\/2026_FIFA_World_Cup_Group_D",
+    "updated_at":"2026-07-02T14:06:12.053732"
   },
   {
     "position":2,
@@ -23,7 +26,10 @@
     "goals_against":2,
     "goal_difference":0,
     "points":4,
-    "qualification":"Advance to knockout stage"
+    "qualification":"Advance to knockout stage",
+    "group_name":"D",
+    "source_url":"https:\/\/en.wikipedia.org\/wiki\/2026_FIFA_World_Cup_Group_D",
+    "updated_at":"2026-07-02T14:06:12.053732"
   },
   {
     "position":3,
@@ -36,7 +42,10 @@
     "goals_against":4,
     "goal_difference":-2,
     "points":4,
-    "qualification":"Advance to knockout stage"
+    "qualification":"Advance to knockout stage",
+    "group_name":"D",
+    "source_url":"https:\/\/en.wikipedia.org\/wiki\/2026_FIFA_World_Cup_Group_D",
+    "updated_at":"2026-07-02T14:06:12.053732"
   },
   {
     "position":4,
@@ -49,6 +58,9 @@
     "goals_against":5,
     "goal_difference":-2,
     "points":3,
-    "qualification":null
+    "qualification":null,
+    "group_name":"D",
+    "source_url":"https:\/\/en.wikipedia.org\/wiki\/2026_FIFA_World_Cup_Group_D",
+    "updated_at":"2026-07-02T14:06:12.053732"
   }
 ]

@@ -1,12 +1,14 @@
-# convertir la tabla HTML a DataFrame;
-# después limpiar nombres de columnas;
-# después acomodar valores;
-# después preparar los datos para guardarlos o reutilizarlos.
+
 
 from  io import StringIO #convierte un texto normal en un objeto parecido a un archivo en memoria.(BUFFER)
 import pandas as pd #librería para el manejo de datos.
 import re # estto es para eliminar  cosas raras entre parentesis 
+from datetime import datetime
 
+# convertir la tabla HTML a DataFrame;
+# después limpiar nombres de columnas;
+# después acomodar valores;
+# después preparar los datos para guardarlos o reutilizarlos.
 
 # 1.funcion para convertir tabla  html a dataframe
 
@@ -114,6 +116,12 @@ def save_dataframe_to_json(df, output_path):
     orient="records",
     force_ascii=False,
     indent=2)
+# agregamos columnas nuevas de source y update
+def add_metadata(df,group_name,source_url):
+    df["group_name"] =group_name
+    df["source_url"] = source_url
+    df["updated_at"]=datetime.now().isoformat()
+    return df
 
 
 
@@ -131,6 +139,12 @@ if __name__ == "__main__":
     df = clean_standing_dataframe(df)
 
     df = clean_standings_values(df)
+
+    df = add_metadata(
+    df,
+    group_name="D",
+    source_url="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D"
+)
 
     save_dataframe_to_json(df, "data/group_d_standings.json")
 
