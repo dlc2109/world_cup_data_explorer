@@ -1,6 +1,13 @@
 from bs4 import BeautifulSoup
 
 
+#--------------------------------------------------------------------------#
+# 1. encontrar la sección correcta;
+# 2. ubicar la tabla correcta;
+# 3. validar que esa tabla parece ser la de posiciones.
+# -------------------------------------------------------------------------#
+
+
 def find_standings_table(html):
     # Creamos el objeto BeautifulSoup para poder recorrer el HTML.
     soup = BeautifulSoup(html, "html.parser")
