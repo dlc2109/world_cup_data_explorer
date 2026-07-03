@@ -4,6 +4,8 @@ from  io import StringIO #convierte un texto normal en un objeto parecido a un a
 import pandas as pd #librería para el manejo de datos.
 import re # estto es para eliminar  cosas raras entre parentesis 
 from datetime import datetime
+from wikipedia_scraper import download_group_page, BASE_URL
+from parsers import find_standings_table
 
 # convertir la tabla HTML a DataFrame;
 # después limpiar nombres de columnas;
@@ -26,7 +28,7 @@ def convert_html_to_dataframe(standings_table):
 
 #2ya teneiendo el DAtaframe vamos a limiarlo ( EJ : Teamvte → team)
  # recibimos el  dataframe = df  como parametro 
-def clean_standing_dataframe(df): 
+def clean_standings_dataframe(df): 
     df.columns=df.columns.str.strip()#limpia los espacios
     column_mapping ={ #creamos el diccionario con los nombres claros
     "Pos": "position",
@@ -123,32 +125,61 @@ def add_metadata(df,group_name,source_url):
     df["updated_at"]=datetime.now().isoformat()
     return df
 
+## def process_group(group_letter): Procesa un grupo completo: descarga el HTML, encuentra la tabla,
+# limpia los datos, agrega metadata y guarda el JSON final.
+def process_group(group_letter):
+    group_letter = str(group_letter).strip().upper()
 
+    html = download_group_page(group_letter)
 
-if __name__ == "__main__":
-   if __name__ == "__main__":
-    from wikipedia_scraper import download_group_d_page
-    from parsers import find_standings_table
-
-    html = download_group_d_page()
+    if html is None:
+        print(f"No se pudo descargar el Grupo {group_letter}.")
+        return None
 
     standings_table = find_standings_table(html)
 
     df = convert_html_to_dataframe(standings_table)
 
-    df = clean_standing_dataframe(df)
+    df = clean_standings_dataframe(df)
 
     df = clean_standings_values(df)
 
+    source_url = BASE_URL.format(group_letter)
+
     df = add_metadata(
-    df,
-    group_name="D",
-    source_url="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_Group_D"
-)
+        df,
+        group_name=group_letter,
+        source_url=source_url
+    )
 
-    save_dataframe_to_json(df, "data/group_d_standings.json")
+    output_path = f"data/group_{group_letter.lower()}_standings.json"
 
-    print(df.head())
+    save_dataframe_to_json(df, output_path)
 
-    print("JSON guardado en data/group_d_standings.json")
+    print(f"Grupo {group_letter} guardado en {output_path}")
 
+    return df
+
+# def process_all_groups (): Recorre todos los grupos definidos en GROUPS,
+# procesa cada uno y continúa aunque alguno falle.
+def process_all_groups ():
+  from wikipedia_scraper import GROUPS  
+  processed_groups = []
+  for group in  GROUPS:
+    try:
+        process_group(group)
+        processed_groups.append(group)
+        print(f"Grupo {group} procesado correctamente.")
+    except Exception as error:
+        print(f"Error procesando el grupo {group}: {error}")
+
+  return processed_groups
+# Paso 10: actualizamos el bloque principal.
+# Este bloque sirve para probar process_all_groups()
+# ejecutando normalizers.py directamente desde consola.
+if __name__ == "__main__":
+    # Paso 11: llamamos la funcion general.
+    successful_groups = process_all_groups()
+
+    # Paso 12: imprimimos el resumen final.
+    print("Grupos procesados correctamente:", successful_groups)
