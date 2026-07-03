@@ -6,6 +6,7 @@ import re # estto es para eliminar  cosas raras entre parentesis
 from datetime import datetime
 from wikipedia_scraper import download_group_page, BASE_URL
 from parsers import find_standings_table
+from wikipedia_scraper import GROUPS
 
 # convertir la tabla HTML a DataFrame;
 # después limpiar nombres de columnas;
@@ -174,12 +175,38 @@ def process_all_groups ():
         print(f"Error procesando el grupo {group}: {error}")
 
   return processed_groups
-# Paso 10: actualizamos el bloque principal.
-# Este bloque sirve para probar process_all_groups()
-# ejecutando normalizers.py directamente desde consola.
-if __name__ == "__main__":
-    # Paso 11: llamamos la funcion general.
-    successful_groups = process_all_groups()
 
-    # Paso 12: imprimimos el resumen final.
-    print("Grupos procesados correctamente:", successful_groups)
+# Esta funcion recorrera todos los grupos definidos en GROUPS,
+# procesara cada uno con process_group(group)
+# y unira todos los resultados en un solo DataFrame.
+def process_all_groups_to_dataframe():
+    all_dataframes = []
+    for group in GROUPS:
+        try:
+            df = process_group(group)
+            if df is not None:
+             all_dataframes.append(df)
+             print(f"Grupo {group} agregado al DataFrame final.")
+        except Exception as error:
+            print(f"Error procesando el grupo {group}: {error}")
+    if not all_dataframes:
+         raise ValueError("No se pudo procesar ningun grupo correctamente.")
+          #combinamos todos los DataFrames en uno solo.
+          # pandas.concat() une todos los DataFrames de la lista.   
+    combined_df = pd.concat(all_dataframes, ignore_index=True)
+    return combined_df
+
+
+
+if __name__ == "__main__":
+    df = process_all_groups_to_dataframe()
+
+    save_dataframe_to_json(df, "data/standings.json")
+
+    print("\nDataFrame combinado:")
+    print(df.head())
+
+    print("\nTotal de registros:")
+    print(len(df))
+
+    print("JSON consolidado guardado en data/standings.json")
