@@ -1,1 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>World Cup Data Explorer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+    <!-- Layout general: divide la pagina entre sidebar y contenido principal. -->
+    <div class="dashboard_layout_container">
+
+        <!-- ====================================================== -->
+        <!-- Sidebar -->
+        <!-- Menu lateral fijo del dashboard. -->
+        <!-- Contiene marca, navegacion y estado de actualizacion. -->
+        <!-- ====================================================== -->
+
+        <aside class="sidebar_container">
+
+            <!-- Sidebar Header -->
+            <!-- Marca visual del proyecto dentro del sidebar. -->
+
+            <div class="sidebar_header_container">
+
+                <h1 class="sidebar_title">
+                    World Cup
+                </h1>
+
+                <p class="sidebar_subtitle">
+                    Data Explorer
+                </p>
+
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <!-- Botones para navegar entre las secciones principales del dashboard. -->
+            <!-- Mas adelante dashboard.js puede conectarlos con scroll o filtros visuales. -->
+
+            <nav class="sidebar_nav_container" aria-label="Dashboard Navigation">
+
+                <!-- Dashboard Button -->
+
+                <button id="nav_dashboard_button" class="sidebar_nav_button active" type="button">
+                    <span class="sidebar_nav_icon">
+                        ●
+                    </span>
+
+                    <span class="sidebar_nav_text">
+                        Dashboard
+                    </span>
+                </button>
+
+                <!-- Statistics Button -->
+
+                <button id="nav_statistics_button" class="sidebar_nav_button" type="button">
+                    <span class="sidebar_nav_icon">
+                        ●
+                    </span>
+
+                    <span class="sidebar_nav_text">
+                        Statistics
+                    </span>
+                </button>
+
+                <!-- Standings Button -->
+
+                <button id="nav_standings_button" class="sidebar_nav_button" type="button">
+                    <span class="sidebar_nav_icon">
+                        ●
+                    </span>
+
+                    <span class="sidebar_nav_text">
+                        Standings
+                    </span>
+                </button>
+
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <!-- Espacio para mostrar la ultima actualizacion de los datos. -->
+            <!-- JavaScript actualizara #sidebar_update_value cuando consuma la API. -->
+
+            <div class="sidebar_footer_container">
+
+                <span class="sidebar_update_label">
+                    Last Update
+                </span>
+
+                <strong id="sidebar_update_value" class="sidebar_update_value">
+                    Pending...
+                </strong>
+
+            </div>
+
+        </aside>
+
+        <!-- ====================================================== -->
+        <!-- Main Content -->
+        <!-- Contenido central del dashboard. -->
+        <!-- Aqui se muestran hero, estadisticas y tabla de posiciones. -->
+        <!-- ====================================================== -->
+
+        <main id="dashboard_main_container" class="dashboard_main_container">
+
+            <!-- ====================================================== -->
+            <!-- Hero Banner -->
+            <!-- Primera seccion visual del dashboard. -->
+            <!-- Los botones pueden llevar despues a Statistics y Standings. -->
+            <!-- ====================================================== -->
+
+            <section id="hero_banner_container" class="hero_banner_container">
+
+                <div class="hero_overlay_container">
+
+                    <div class="hero_text_container">
+
+                        <p class="hero_subtitle">
+                            FIFA World Cup 2026 Dashboard
+                        </p>
+
+                        <h2 class="hero_title">
+                            World Cup<br>
+                            Data Explorer
+                        </h2>
+
+                        <p class="hero_description">
+                            Explore standings, statistics and team performance using data
+                            extracted with Web Scraping, SQLite and Flask.
+                        </p>
+
+                    </div>
+
+                    <div class="hero_actions_container">
+
+                        <button id="hero_statistics_button" class="primary_button" type="button">
+                            View Statistics
+                        </button>
+
+                        <button id="hero_standings_button" class="secondary_button" type="button">
+                            View Standings
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ====================================================== -->
+            <!-- Statistics Section -->
+            <!-- Cards de indicadores del torneo. -->
+            <!-- Flask: GET /api/statistics -->
+            <!-- JavaScript llenara estos valores usando los ids de cada card. -->
+            <!-- ====================================================== -->
+
+            <section id="statistics_section_container" class="statistics_section_container">
+
+                <div class="section_header_container">
+
+                    <p class="section_subtitle">
+                        Tournament Overview
+                    </p>
+
+                    <h2 class="section_title">
+                        Statistics
+                    </h2>
+
+                </div>
+
+                <!-- Statistics Cards: 5 arriba, 2 abajo -->
+                <!-- Cada card representa un indicador del torneo. -->
+                <!-- Los valores empiezan en "--" hasta que dashboard.js cargue la API. -->
+
+                <div class="statistics_cards_container">
+
+                    <article class="statistics_card">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Teams
+                        </p>
+
+                        <h3 id="total_teams_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span class="statistics_card_description">
+                            Total participants
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Matches
+                        </p>
+
+                        <h3 id="total_matches_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span class="statistics_card_description">
+                            Total played
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Goals
+                        </p>
+
+                        <h3 id="total_goals_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span class="statistics_card_description">
+                            Total scored
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Average
+                        </p>
+
+                        <h3 id="average_goals_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span class="statistics_card_description">
+                            Goals per match
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Best Offense
+                        </p>
+
+                        <h3 id="best_offense_team_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span id="best_offense_goals_value" class="statistics_card_description">
+                            -- goals scored
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card statistics_card_wide">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Best Defense
+                        </p>
+
+                        <h3 id="best_defense_team_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span id="best_defense_goals_value" class="statistics_card_description">
+                            -- goals conceded
+                        </span>
+
+                    </article>
+
+                    <article class="statistics_card statistics_card_wide">
+
+                        <span class="statistics_card_icon">
+                            ●
+                        </span>
+
+                        <p class="statistics_card_label">
+                            Last Update
+                        </p>
+
+                        <h3 id="last_update_date_value" class="statistics_card_value">
+                            --
+                        </h3>
+
+                        <span id="last_update_time_value" class="statistics_card_description">
+                            --
+                        </span>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- ====================================================== -->
+            <!-- Standings Section -->
+            <!-- Tabla de posiciones por grupo. -->
+            <!-- Flask: GET /api/standings -->
+            <!-- Flask: GET /api/standings?group=A -->
+            <!-- JavaScript llenara el tbody y aplicara filtros por grupo/equipo. -->
+            <!-- ====================================================== -->
+
+            <section id="standings_section_container" class="standings_section_container">
+
+                <div class="section_header_container standings_header_container">
+
+                    <div>
+
+                        <p class="section_subtitle">
+                            Group Stage
+                        </p>
+
+                        <h2 class="section_title">
+                            Standings
+                        </h2>
+
+                    </div>
+
+                    <!-- Controles de filtro de la tabla. -->
+                    <!-- El select filtra por grupo y el input permite buscar equipos. -->
+                    <div class="standings_controls_container">
+
+                        <label for="group_filter_select" class="standings_filter_label">
+                            Group
+                        </label>
+
+                        <select id="group_filter_select" class="standings_filter_select" name="group_filter_select">
+                            <option value="">
+                                All Groups
+                            </option>
+
+                            <option value="A">
+                                Group A
+                            </option>
+
+                            <option value="B">
+                                Group B
+                            </option>
+
+                            <option value="C">
+                                Group C
+                            </option>
+
+                            <option value="D">
+                                Group D
+                            </option>
+
+                            <option value="E">
+                                Group E
+                            </option>
+
+                            <option value="F">
+                                Group F
+                            </option>
+
+                            <option value="G">
+                                Group G
+                            </option>
+
+                            <option value="H">
+                                Group H
+                            </option>
+
+                            <option value="I">
+                                Group I
+                            </option>
+
+                            <option value="J">
+                                Group J
+                            </option>
+
+                            <option value="K">
+                                Group K
+                            </option>
+
+                            <option value="L">
+                                Group L
+                            </option>
+
+                        </select>
+
+                        <input
+                            id="team_search_input"
+                            class="team_search_input"
+                            type="search"
+                            placeholder="Search team..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+                <!-- Contenedor de la tabla. -->
+                <!-- El encabezado queda fijo en HTML y el cuerpo se genera con JavaScript. -->
+                <div class="standings_table_container">
+
+                    <table class="standings_table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>Pld</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>Pts</th>
+                                <th>Qualification</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="standings_table_body">
+
+                            <!-- JavaScript insertará las filas aquí -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- JavaScript principal del dashboard. -->
+    <!-- defer carga el script sin bloquear el HTML inicial. -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+
+</body>
+
+</html>
