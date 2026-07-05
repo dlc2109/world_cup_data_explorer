@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request,render_template
 from scraper.database import (
-    count_standings,
     get_all_standings,
     get_standings_by_group,
 )
+
+from services.statistics_service import get_dashboard_statistics
 
 
 
@@ -38,11 +39,11 @@ def home():
 # Esta def statistics()  ruta devuelve una estadística sencilla
 # para comprobar que Flask puede consultar SQLite.
 @app.route("/api/statistics")
+
 def statistics():
-    total =count_standings()
-    return jsonify({
-        "total_records": total
-    })
+    dashboard_statistics = get_dashboard_statistics()
+
+    return jsonify(dashboard_statistics)
 
 
 
