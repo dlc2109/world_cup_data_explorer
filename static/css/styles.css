@@ -645,6 +645,38 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.team_name_container {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    min-width: 0;
+}
+
+.team_flag_container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    min-width: 22px;
+    height: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--space-4);
+}
+
+.team_flag_image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team_name {
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
 #standings_table_body tr {
     background: transparent;
     transition:

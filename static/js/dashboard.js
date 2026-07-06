@@ -27,6 +27,63 @@ const STATISTICS_API_URL = "/api/statistics";
 const STANDINGS_API_URL = "/api/standings";
 const EMPTY_VALUE = "--";
 const TABLE_COLUMN_COUNT = 11;
+
+/* ======================================================
+    TEAM FLAGS
+    Mapa temporal de banderas SVG locales.
+====================================================== */
+
+const TEAM_FLAGS = {
+    "Algeria": "dz.svg",
+    "Argentina": "ar.svg",
+    "Australia": "au.svg",
+    "Austria": "at.svg",
+    "Belgium": "be.svg",
+    "Bosnia and Herzegovina": "ba.svg",
+    "Brazil": "br.svg",
+    "Canada": "ca.svg",
+    "Cape Verde": "cv.svg",
+    "Colombia": "co.svg",
+    "Croatia": "hr.svg",
+    "Curaçao": "cw.svg",
+    "Czech Republic": "cz.svg",
+    "DR Congo": "cd.svg",
+    "Ecuador": "ec.svg",
+    "Egypt": "eg.svg",
+    "England": "gb-eng.svg",
+    "France": "fr.svg",
+    "Germany": "de.svg",
+    "Ghana": "gh.svg",
+    "Haiti": "ht.svg",
+    "Iran": "ir.svg",
+    "Iraq": "iq.svg",
+    "Ivory Coast": "ci.svg",
+    "Japan": "jp.svg",
+    "Jordan": "jo.svg",
+    "Mexico": "mx.svg",
+    "Morocco": "ma.svg",
+    "Netherlands": "nl.svg",
+    "New Zealand": "nz.svg",
+    "Norway": "no.svg",
+    "Panama": "pa.svg",
+    "Paraguay": "py.svg",
+    "Portugal": "pt.svg",
+    "Qatar": "qa.svg",
+    "Saudi Arabia": "sa.svg",
+    "Scotland": "gb-sct.svg",
+    "Senegal": "sn.svg",
+    "South Africa": "za.svg",
+    "South Korea": "kr.svg",
+    "Spain": "es.svg",
+    "Sweden": "se.svg",
+    "Switzerland": "ch.svg",
+    "Tunisia": "tn.svg",
+    "Turkey": "tr.svg",
+    "United States": "us.svg",
+    "Uruguay": "uy.svg",
+    "Uzbekistan": "uz.svg",
+};
+
 // Guarda los standings cargados desde Flask.
 // Se reutilizarán para el buscador.
 let standingsData = [];
@@ -67,6 +124,19 @@ function wait(milliseconds) {
     return new Promise(function (resolve) {
         window.setTimeout(resolve, milliseconds);
     });
+}
+
+// Devuelve la ruta del SVG de bandera o el fallback si no existe.
+function getTeamFlagPath(teamName) {
+
+    const fileName = TEAM_FLAGS[teamName];
+
+    if (fileName) {
+        return `/static/assets/flags/${fileName}`;
+    }
+
+    return "/static/assets/flags/default.svg";
+
 }
 
 
@@ -184,10 +254,26 @@ async function fetchStandings(url) {
 // Crea una fila HTML para un equipo.
 function createStandingRow(team) {
 
+    const teamName = team.team ?? EMPTY_VALUE;
+    const teamFlagPath = getTeamFlagPath(teamName);
+
     return `
         <tr>
             <td>${team.position ?? EMPTY_VALUE}</td>
-            <td>${team.team ?? EMPTY_VALUE}</td>
+            <td>
+                <span class="team_name_container">
+                    <span class="team_flag_container">
+                        <img
+                            class="team_flag_image"
+                            src="${teamFlagPath}"
+                            alt="${teamName} flag"
+                            loading="lazy"
+                            onerror="this.onerror=null; this.src='/static/assets/flags/default.svg';"
+                        >
+                    </span>
+                    <span class="team_name">${teamName}</span>
+                </span>
+            </td>
             <td>${team.played ?? EMPTY_VALUE}</td>
             <td>${team.wins ?? EMPTY_VALUE}</td>
             <td>${team.draws ?? EMPTY_VALUE}</td>
