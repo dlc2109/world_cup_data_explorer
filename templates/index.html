@@ -28,13 +28,23 @@
 
             <div class="sidebar_header_container">
 
-                <h1 class="sidebar_title">
-                    World Cup
-                </h1>
+                <div class="sidebar_brand_container">
+                    <img
+                        class="sidebar_brand_image"
+                        src="{{ url_for('static', filename='images/copa.png') }}"
+                        alt="World Cup trophy"
+                    >
 
-                <p class="sidebar_subtitle">
-                    Data Explorer
-                </p>
+                    <div class="sidebar_brand_text_container">
+                        <h1 class="sidebar_title">
+                            World Cup
+                        </h1>
+
+                        <p class="sidebar_subtitle">
+                            Data Explorer 2026
+                        </p>
+                    </div>
+                </div>
 
             </div>
 
@@ -130,8 +140,8 @@
                         </h2>
 
                         <p class="hero_description">
-                            Explore standings, statistics and team performance using data
-                            extracted with Web Scraping, SQLite and Flask.
+                            Explora posiciones, estadísticas y rendimiento de selecciones usando datos
+                            extraídos con Web Scraping, SQLite y Flask.
                         </p>
 
                     </div>
@@ -465,6 +475,20 @@
                             placeholder="Search team..."
                             autocomplete="off"
                         >
+
+                        <button id="refresh_data_button" class="refresh_data_button" type="button">
+                            <span class="refresh_button_icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 6v5h-5" />
+                                    <path d="M4 18v-5h5" />
+                                    <path d="M18.5 9A7 7 0 0 0 6.2 5.8L4 8" />
+                                    <path d="M5.5 15A7 7 0 0 0 17.8 18.2L20 16" />
+                                </svg>
+                            </span>
+                            <span class="refresh_button_text">
+                                Refresh
+                            </span>
+                        </button>
 
                     </div>
 

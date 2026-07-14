@@ -25,6 +25,7 @@
 
 const STATISTICS_API_URL = "/api/statistics";
 const STANDINGS_API_URL = "/api/standings";
+const REFRESH_API_URL = "/api/refresh";
 const EMPTY_VALUE = "--";
 const TABLE_COLUMN_COUNT = 11;
 
@@ -585,6 +586,83 @@ function updateStatisticsCards(statistics) {
 
 }
 
+/* ======================================================
+    REFRESH DATA
+====================================================== */
+
+// Llama a Flask usando POST /api/refresh.
+async function refreshData() {
+    const response = await fetch(
+        REFRESH_API_URL,
+        {
+            method: "POST",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Error HTTP al refrescar datos: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+
+// Cambia el texto del boton y lo desactiva mientras Flask actualiza datos.
+function setRefreshButtonLoading(isLoading) {
+    const refreshButton = getElementById("refresh_data_button");
+
+    if (!refreshButton) {
+        return;
+    }
+
+    refreshButton.disabled = isLoading;
+
+    if (isLoading) {
+        refreshButton.querySelector(".refresh_button_text").textContent = "Refreshing...";
+    } else {
+        refreshButton.querySelector(".refresh_button_text").textContent = "Refresh";
+    }
+}
+
+
+// Vuelve a pedir statistics y standings despues de actualizar SQLite.
+async function reloadDashboardData() {
+    const statistics = await fetchStatistics();
+    updateStatisticsCards(statistics);
+
+    await loadStandings();
+}
+
+
+// Ejecuta el refresh completo desde el boton del frontend.
+async function handleRefreshClick() {
+    try {
+        setRefreshButtonLoading(true);
+
+        await refreshData();
+        await reloadDashboardData();
+    } catch (error) {
+        console.error("No se pudieron refrescar los datos:", error);
+    } finally {
+        setRefreshButtonLoading(false);
+    }
+}
+
+
+// Conecta el boton Refresh con POST /api/refresh.
+function setupRefreshButton() {
+    const refreshButton = getElementById("refresh_data_button");
+
+    if (!refreshButton) {
+        return;
+    }
+
+    refreshButton.addEventListener(
+        "click",
+        handleRefreshClick
+    );
+}
+
 
 /* ======================================================
     INICIO DEL DASHBOARD
@@ -605,6 +683,8 @@ async function initializeDashboard() {
         setupSearchInput();
 
         setupNavigationEvents();
+
+        setupRefreshButton();
 
     } catch (error) {
 

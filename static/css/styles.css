@@ -135,6 +135,24 @@ body {
     border-bottom: 1px solid var(--color-border);
 }
 
+.sidebar_brand_container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.sidebar_brand_image {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 var(--space-8) rgba(32, 199, 99, 0.28));
+    transform: translateY(2px);
+}
+
+.sidebar_brand_text_container {
+    min-width: 0;
+}
+
 .sidebar_title {
     color: var(--color-text);
     font-size: var(--font-size-sidebar-title);
@@ -590,6 +608,63 @@ body {
     background-repeat: no-repeat;
     background-position: var(--space-16) center;
     background-size: 18px 18px;
+}
+
+.refresh_data_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    min-height: var(--space-48);
+    padding: var(--space-12) var(--space-20);
+    color: var(--color-text);
+    background: var(--color-accent);
+    border: 1px solid rgba(32, 199, 99, 0.56);
+    border-radius: var(--radius-control);
+    font-size: var(--font-size-small);
+    font-weight: 800;
+    transform: translateY(0) scale(1);
+    transition:
+        background-color 180ms var(--motion-smooth),
+        border-color 180ms var(--motion-smooth),
+        box-shadow 180ms var(--motion-smooth),
+        opacity 180ms var(--motion-smooth),
+        transform 180ms var(--motion-smooth);
+}
+
+.refresh_data_button:hover {
+    background: #24dd70;
+    border-color: rgba(32, 199, 99, 0.72);
+    box-shadow: 0 0 0 3px rgba(32, 199, 99, 0.12);
+    transform: translateY(-2px);
+}
+
+.refresh_data_button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.refresh_data_button:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    transform: none;
+}
+
+.refresh_button_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+}
+
+.refresh_button_icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .standings_filter_select:hover,

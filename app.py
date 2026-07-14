@@ -2,11 +2,17 @@ from flask import Flask, jsonify, request,render_template
 from scraper.database import (
     get_all_standings,
     get_standings_by_group,
+    create_standings_table,
+    load_standings_from_json,
+    insert_standings,
+    count_standings,
+)
+from scraper.normalizers import (
+    process_all_groups_to_dataframe,
+    save_dataframe_to_json
 )
 
 from services.statistics_service import get_dashboard_statistics
-
-
 
 
 app = Flask(__name__)
@@ -63,6 +69,74 @@ def standings():
     ]
 
     return jsonify(standings_data)
+
+# ======================================================
+# REFRESH API
+# ======================================================
+# Esta ruta pertenece a Flask.
+# Su responsabilidad sera actualizar los datos del proyecto.
+# En este paso solo regeneramos data/standings.json.
+# Todavia NO actualizamos SQLite.
+@app.route("/api/refresh", methods=["POST"])
+@app.route("/api/refresh", methods=["POST"])
+def refresh_data():
+    print("POST /api/refresh recibido", flush=True)
+
+    try:
+        print("Iniciando scraper...", flush=True)
+
+        # process_all_groups_to_dataframe viene de scraper/normalizers.py.
+        # Descarga todos los grupos, encuentra Standings,
+        # limpia los datos y devuelve un DataFrame combinado.
+        df = process_all_groups_to_dataframe()
+
+        print("Scraper terminado", flush=True)
+        print("Guardando data/standings.json...", flush=True)
+
+        # save_dataframe_to_json viene de scraper/normalizers.py.
+        # Guarda el DataFrame actualizado como JSON.
+        save_dataframe_to_json(
+            df,
+            "data/standings.json"
+        )
+
+        print("JSON actualizado correctamente", flush=True)
+        print("Actualizando SQLite...", flush=True)
+
+        # create_standings_table viene de scraper/database.py.
+        # Asegura que la tabla standings exista antes de insertar datos.
+        create_standings_table()
+
+        # load_standings_from_json viene de scraper/database.py.
+        # Lee el JSON actualizado y devuelve una lista de diccionarios.
+        records = load_standings_from_json("data/standings.json")
+
+        # insert_standings viene de scraper/database.py.
+        # Borra registros viejos e inserta los datos nuevos en SQLite.
+        insert_standings(records)
+
+        # count_standings viene de scraper/database.py.
+        # Confirma cuantos registros quedaron guardados en SQLite.
+        total_records = count_standings()
+
+        print("SQLite actualizado correctamente", flush=True)
+
+        # jsonify viene de Flask.
+        # Devolvemos respuesta final al frontend.
+        return jsonify({
+            "status": "success",
+            "message": "Datos actualizados correctamente",
+            "total_records": total_records
+        })
+
+    except Exception as error:
+        print(f"Error en /api/refresh: {error}", flush=True)
+
+        return jsonify({
+            "status": "error",
+            "message": str(error)
+        }), 500
+
 
 
 if __name__ == "__main__":
