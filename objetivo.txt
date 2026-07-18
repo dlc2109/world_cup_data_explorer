@@ -32,58 +32,15 @@ de allí mostrará los equipos clasificados
 *EN HTML añadí botones (etiqueta button) y en js hice un fetch para que la tabla se actualice en caliente sin tener que recargar toda la página.*
 *EN CSS añadí transiciones y rotaciones al trofeo de formato png, al logo todavía me falta actualizar*
 
-EXTRA: defer 
+EXTRA: defer: El script no se ejecuta hasta que toda la página web termina de cargarse. Le dice al navegador que descargue un archivo JavaScript en segundo plano mientras lee el resto de la página.
 
-<section class="controls_section" id="filters_container">
-               <h2>Filtros de Exploración</h2>
-               <div class="filter_buttons">
-                <button onclick="loadStandings()">Ver Tabla General</button>
-                <button onclick="loadQualified()">Ver Clasificados</button>
-               </div>
-               <div class="search_box">
-                   <input type="text" id="teamSearch" placeholder="Buscar equipo..." onkeyup="searchTeam()">
-               </div>
-           </section>
+#Cómo lo vemos de mejor forma?
 
-          <section class="visuals_section" id="visuals_container">
-               <div class="animation_wrapper">
-                 <h2>Logo Copa del Mundo</h2>
-                 <img src="{{ url_for('static', filename='images/logowc.jpg') }}" class="animate-logo" alt="Logo Mundial">
-                 <h2>Trofeo Copa del Mundo 2026 </h2>
-                 <img src="{{ url_for('static', filename='images/world_cup_trophy.png') }}" class="animate-trophy" alt="Trofeo Mundial">
-               </div>
-          </section>
+Cuando le ponemos defer a tu script (así: <script src="..." defer>), al navegador no se le ocurre mejor idea que decirse esto: "Oye, bájate este archivo de JavaScript en segundo plano mientras sigues dibujando el HTML sin frenarte. Pero ojo, no lo ejecutes hasta que la página esté completamente lista y cargada en la pantalla".
 
-          <button id="btn-qualified" onclick="filterData('qualified')">Ver Clasificados</button> <!-- Añadidura de botón para ver los clasificados -->>
-          
-           <table>
-             <thead>
-                <tr>
-                    <th>Equipo</th>
-                    <th>Puntos</th>
-                    <th>Posición</th>
-               </tr>
-            </thead>
-            <tbody id="table-body">
-            </tbody>
-          </table>
+Es como cuando le dices a tu papá que no se coma tu hamburguesa, pero a diferencia de el, defer no lo hace
 
-          <!-- Buscador de Fases Eliminatorias -->
-           <div class="search-container">
-               <label for="phase-select">Buscar por Fase:</label>
-               <select id="phase-select">
-                  <option value="ALL">Todas las fases</option>
-                  <option value="Round of 32">Dieciseisavos (Round of 32)</option>
-                  <option value="Round of 16">Octavos de Final</option>
-                  <option value="Quarter-Finals">Cuartos de Final</option>
-                  <option value="Semi-final">Semifinales</option>
-              </select>
-           </div>
+DEFER: 1 PAPÁ RESPONSABLE: 0
 
 
-       <div id="knockout-matches-container" class="matches-grid">
-    <!---- las tarjetas se generan dinámicamente con js -->
-        </div>
-        </main>
 
-    </div>
