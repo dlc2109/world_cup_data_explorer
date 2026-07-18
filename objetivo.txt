@@ -32,3 +32,58 @@ de allí mostrará los equipos clasificados
 *EN HTML añadí botones (etiqueta button) y en js hice un fetch para que la tabla se actualice en caliente sin tener que recargar toda la página.*
 *EN CSS añadí transiciones y rotaciones al trofeo de formato png, al logo todavía me falta actualizar*
 
+EXTRA: defer 
+
+<section class="controls_section" id="filters_container">
+               <h2>Filtros de Exploración</h2>
+               <div class="filter_buttons">
+                <button onclick="loadStandings()">Ver Tabla General</button>
+                <button onclick="loadQualified()">Ver Clasificados</button>
+               </div>
+               <div class="search_box">
+                   <input type="text" id="teamSearch" placeholder="Buscar equipo..." onkeyup="searchTeam()">
+               </div>
+           </section>
+
+          <section class="visuals_section" id="visuals_container">
+               <div class="animation_wrapper">
+                 <h2>Logo Copa del Mundo</h2>
+                 <img src="{{ url_for('static', filename='images/logowc.jpg') }}" class="animate-logo" alt="Logo Mundial">
+                 <h2>Trofeo Copa del Mundo 2026 </h2>
+                 <img src="{{ url_for('static', filename='images/world_cup_trophy.png') }}" class="animate-trophy" alt="Trofeo Mundial">
+               </div>
+          </section>
+
+          <button id="btn-qualified" onclick="filterData('qualified')">Ver Clasificados</button> <!-- Añadidura de botón para ver los clasificados -->>
+          
+           <table>
+             <thead>
+                <tr>
+                    <th>Equipo</th>
+                    <th>Puntos</th>
+                    <th>Posición</th>
+               </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+          </table>
+
+          <!-- Buscador de Fases Eliminatorias -->
+           <div class="search-container">
+               <label for="phase-select">Buscar por Fase:</label>
+               <select id="phase-select">
+                  <option value="ALL">Todas las fases</option>
+                  <option value="Round of 32">Dieciseisavos (Round of 32)</option>
+                  <option value="Round of 16">Octavos de Final</option>
+                  <option value="Quarter-Finals">Cuartos de Final</option>
+                  <option value="Semi-final">Semifinales</option>
+              </select>
+           </div>
+
+
+       <div id="knockout-matches-container" class="matches-grid">
+    <!---- las tarjetas se generan dinámicamente con js -->
+        </div>
+        </main>
+
+    </div>
