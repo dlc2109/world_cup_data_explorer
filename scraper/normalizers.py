@@ -1,12 +1,9 @@
-
-
 from  io import StringIO #convierte un texto normal en un objeto parecido a un archivo en memoria.(BUFFER)
 import pandas as pd #librería para el manejo de datos.
 import re # estto es para eliminar  cosas raras entre parentesis 
 from datetime import datetime
-from wikipedia_scraper import download_group_page, BASE_URL
-from parsers import find_standings_table
-from wikipedia_scraper import GROUPS
+from scraper.wikipedia_scraper import download_group_page, BASE_URL, GROUPS
+from scraper.parsers import find_standings_table
 
 # convertir la tabla HTML a DataFrame;
 # después limpiar nombres de columnas;
@@ -164,7 +161,6 @@ def process_group(group_letter):
 # def process_all_groups (): Recorre todos los grupos definidos en GROUPS,
 # procesa cada uno y continúa aunque alguno falle.
 def process_all_groups ():
-  from wikipedia_scraper import GROUPS  
   processed_groups = []
   for group in  GROUPS:
     try:
