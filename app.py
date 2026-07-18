@@ -150,13 +150,15 @@ def get_top_goles():
         with open('static/knockout.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        # reverse=True para que vayan de mayor a menor cantidad de goles totales
-        # Usamos .get() por seguridad si algún partido no tiene goles cargados aún
+        # reverse=True para que vayan de mayor a menor cantidad de goles totales (de 0-0 a 3-2)
+        # Usamos .get() por seguridad si algún partido no tiene goles cargados aún (tipo, el 0-0 de suiza colombia)
         data_ordenada = sorted(data, key=lambda x: x.get('local_goals', 0) + x.get('away_goals', 0), reverse=True)
         
         return jsonify(data_ordenada)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+##dato extra: IS UNCOMPLETED
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
