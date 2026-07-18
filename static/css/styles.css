@@ -610,6 +610,48 @@ body {
     background-size: 18px 18px;
 }
 
+.qualified_filter_container {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    min-height: var(--space-48);
+    padding: var(--space-12) var(--space-16);
+    color: var(--color-text-muted);
+    background: rgba(5, 8, 6, 0.72);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    font-size: var(--font-size-small);
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        background-color 180ms var(--motion-smooth),
+        border-color 180ms var(--motion-smooth),
+        box-shadow 180ms var(--motion-smooth),
+        color 180ms var(--motion-smooth),
+        transform 180ms var(--motion-smooth);
+}
+
+.qualified_filter_container:hover,
+.qualified_filter_container.qualified_filter_active {
+    color: var(--color-text);
+    background: rgba(5, 8, 6, 0.84);
+    border-color: rgba(32, 199, 99, 0.56);
+    box-shadow: 0 0 0 3px rgba(32, 199, 99, 0.12);
+}
+
+.qualified_filter_container:hover {
+    transform: translateY(-2px);
+}
+
+.qualified_filter_checkbox {
+    width: var(--space-16);
+    height: var(--space-16);
+    margin: 0;
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+
 .refresh_data_button {
     display: inline-flex;
     align-items: center;
@@ -665,6 +707,29 @@ body {
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+/* Animacion del icono Refresh: se activa solo mientras JS agrega refresh_loading. */
+.refresh_data_button.refresh_loading .refresh_button_icon svg {
+    animation: refreshIconSpin 900ms linear infinite;
+}
+
+/* Giro suave del icono para indicar que Flask esta actualizando los datos. */
+@keyframes refreshIconSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Respeta usuarios que prefieren reducir animaciones en el sistema. */
+@media (prefers-reduced-motion: reduce) {
+    .refresh_data_button.refresh_loading .refresh_button_icon svg {
+        animation: none;
+    }
 }
 
 .standings_filter_select:hover,
@@ -910,5 +975,281 @@ body {
 
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* ======================================================
+    RESPONSIVE NAVIGATION
+    Desktop mantiene sidebar fijo.
+    Mobile/tablet usa topbar + menu hamburguesa.
+====================================================== */
+
+.mobile_topbar_container,
+.mobile_menu_overlay {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+
+    body.mobile_menu_open {
+        overflow: hidden;
+    }
+
+    .dashboard_layout_container {
+        display: block;
+        background-attachment: scroll;
+        background-position: center top;
+    }
+
+    .mobile_topbar_container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 80;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: var(--space-64);
+        padding: var(--space-12) var(--space-16);
+        background: linear-gradient(180deg,
+                rgba(10, 18, 14, 0.92),
+                rgba(10, 18, 14, 0.74));
+        border-bottom: 1px solid var(--color-border);
+        backdrop-filter: blur(8px);
+    }
+
+    .mobile_menu_button {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-4);
+        width: var(--space-48);
+        height: var(--space-48);
+        color: var(--color-text);
+        background: rgba(5, 8, 6, 0.72);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-control);
+        transition:
+            border-color 180ms var(--motion-smooth),
+            box-shadow 180ms var(--motion-smooth),
+            transform 180ms var(--motion-smooth);
+    }
+
+    .mobile_menu_button:hover,
+    .mobile_menu_button:focus-visible {
+        border-color: rgba(32, 199, 99, 0.56);
+        box-shadow: 0 0 0 3px rgba(32, 199, 99, 0.12);
+        outline: none;
+    }
+
+    .mobile_menu_button:active {
+        transform: scale(0.98);
+    }
+
+    .mobile_menu_line {
+        display: block;
+        width: var(--space-20);
+        height: 2px;
+        background: var(--color-accent);
+        border-radius: var(--space-4);
+        transition:
+            opacity 180ms var(--motion-smooth),
+            transform 180ms var(--motion-smooth);
+    }
+
+    body.mobile_menu_open .mobile_menu_line:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+    }
+
+    body.mobile_menu_open .mobile_menu_line:nth-child(2) {
+        opacity: 0;
+    }
+
+    body.mobile_menu_open .mobile_menu_line:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .mobile_brand_container {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-8);
+        min-width: 0;
+    }
+
+    .mobile_brand_image {
+        width: var(--space-40);
+        height: var(--space-40);
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(32, 199, 99, 0.22));
+    }
+
+    .mobile_brand_text_container {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .mobile_brand_title {
+        color: var(--color-text);
+        font-size: 18px;
+        font-weight: 900;
+    }
+
+    .mobile_brand_subtitle {
+        color: var(--color-accent);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .sidebar_container {
+        z-index: 90;
+        width: min(320px, 84vw);
+        height: 100dvh;
+        transform: translateX(-105%);
+        box-shadow: 24px 0 48px rgba(0, 0, 0, 0.36);
+        transition:
+            box-shadow 220ms var(--motion-smooth),
+            transform 220ms var(--motion-smooth);
+    }
+
+    body.mobile_menu_open .sidebar_container {
+        transform: translateX(0);
+    }
+
+    .mobile_menu_overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 85;
+        display: block;
+        background: rgba(0, 0, 0, 0.48);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+            opacity 220ms var(--motion-smooth);
+    }
+
+    body.mobile_menu_open .mobile_menu_overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .dashboard_main_container {
+        width: 100%;
+        min-height: 100vh;
+        margin-left: 0;
+        padding: calc(var(--space-64) + var(--space-16)) var(--space-16) var(--space-24);
+    }
+
+    .hero_banner_container {
+        min-height: 300px;
+        padding: var(--space-24);
+    }
+
+    .hero_title {
+        font-size: clamp(40px, 9vw, 64px);
+    }
+
+    .hero_description {
+        max-width: 560px;
+    }
+
+    .statistics_section_container,
+    .standings_section_container {
+        margin-top: var(--space-24);
+    }
+
+    .hero_banner_container,
+    .statistics_section_container,
+    .standings_section_container {
+        scroll-margin-top: calc(var(--space-64) + var(--space-16));
+    }
+
+    .statistics_cards_container {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(240px, 72vw);
+        grid-template-columns: none;
+        gap: var(--space-12);
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        padding-bottom: var(--space-12);
+        scroll-padding-inline: var(--space-4);
+        scroll-snap-type: x mandatory;
+    }
+
+    .statistics_card,
+    .statistics_card_wide {
+        grid-column: auto;
+        min-height: 132px;
+        scroll-snap-align: start;
+    }
+
+    .standings_controls_container {
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
+
+    .standings_filter_label {
+        display: flex;
+        align-items: center;
+    }
+
+    .standings_filter_select,
+    .team_search_input,
+    .qualified_filter_container,
+    .refresh_data_button {
+        min-height: var(--space-48);
+    }
+}
+
+@media (max-width: 640px) {
+
+    .dashboard_main_container {
+        padding-right: var(--space-12);
+        padding-left: var(--space-12);
+    }
+
+    .hero_banner_container {
+        min-height: auto;
+        padding: var(--space-20);
+    }
+
+    .hero_actions_container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .primary_button,
+    .secondary_button {
+        width: 100%;
+    }
+
+    .statistics_cards_container {
+        grid-auto-columns: minmax(228px, 82vw);
+    }
+
+    .standings_filter_select,
+    .team_search_input,
+    .qualified_filter_container,
+    .refresh_data_button {
+        width: 100%;
+    }
+
+    .standings_table_container {
+        max-height: 420px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mobile_menu_button,
+    .mobile_menu_line,
+    .sidebar_container,
+    .mobile_menu_overlay {
+        transition: none;
     }
 }

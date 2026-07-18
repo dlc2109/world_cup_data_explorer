@@ -15,13 +15,48 @@
     <!-- Layout general: divide la pagina entre sidebar y contenido principal. -->
     <div class="dashboard_layout_container">
 
+        <!-- Mobile Header -->
+        <!-- En pantallas pequenas reemplaza el sidebar fijo por un boton hamburguesa. -->
+        <header class="mobile_topbar_container">
+            <button
+                id="mobile_menu_button"
+                class="mobile_menu_button"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-controls="sidebar_container"
+                aria-expanded="false"
+            >
+                <span class="mobile_menu_line"></span>
+                <span class="mobile_menu_line"></span>
+                <span class="mobile_menu_line"></span>
+            </button>
+
+            <div class="mobile_brand_container">
+                <img
+                    class="mobile_brand_image"
+                    src="{{ url_for('static', filename='images/copa.png') }}"
+                    alt="World Cup trophy"
+                >
+
+                <div class="mobile_brand_text_container">
+                    <strong class="mobile_brand_title">
+                        World Cup
+                    </strong>
+
+                    <span class="mobile_brand_subtitle">
+                        Data Explorer
+                    </span>
+                </div>
+            </div>
+        </header>
+
         <!-- ====================================================== -->
         <!-- Sidebar -->
         <!-- Menu lateral fijo del dashboard. -->
         <!-- Contiene marca, navegacion y estado de actualizacion. -->
         <!-- ====================================================== -->
 
-        <aside class="sidebar_container">
+        <aside id="sidebar_container" class="sidebar_container">
 
             <!-- Sidebar Header -->
             <!-- Marca visual del proyecto dentro del sidebar. -->
@@ -109,6 +144,9 @@
             </div>
 
         </aside>
+
+        <!-- Capa oscura para cerrar el menu movil al tocar fuera del sidebar. -->
+        <div id="mobile_menu_overlay" class="mobile_menu_overlay"></div>
 
         <!-- ====================================================== -->
         <!-- Main Content -->
@@ -475,6 +513,18 @@
                             placeholder="Search team..."
                             autocomplete="off"
                         >
+
+                        <!-- Filtro visual para mostrar solo equipos clasificados. -->
+                        <label class="qualified_filter_container" for="qualified_filter_checkbox">
+                            <input
+                                id="qualified_filter_checkbox"
+                                class="qualified_filter_checkbox"
+                                type="checkbox"
+                            >
+                            <span class="qualified_filter_text">
+                                Qualified only
+                            </span>
+                        </label>
 
                         <button id="refresh_data_button" class="refresh_data_button" type="button">
                             <span class="refresh_button_icon" aria-hidden="true">

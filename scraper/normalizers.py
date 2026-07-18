@@ -108,7 +108,7 @@ def clean_standings_values(df):
 
 #GUARDAR EN JSON LOS DATOS LIMPIOS
 #funcion dos parametros el dataframe y output_path  que es la ruta donde vamos a guardar momentaneamente
-# Paso 44: usamos to_json de pandas.
+#  usamos to_json de pandas.
     # orient="records" guarda una lista de objetos JSON.
     # force_ascii=False conserva caracteres especiales correctamente.
     # indent=2 deja el archivo bien formateado y facil de leer.

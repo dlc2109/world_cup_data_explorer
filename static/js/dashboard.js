@@ -474,7 +474,9 @@ async function loadStandings() {
         standingsData = await fetchStandings(url);
 
         await animateTableUpdate(function () {
-            renderStandingsTable(standingsData);
+            renderStandingsTable(
+                getFilteredStandings()
+            );
         });
     } catch (error) {
         console.error("No se pudieron cargar los standings:", error);
@@ -616,6 +618,7 @@ function setRefreshButtonLoading(isLoading) {
     }
 
     refreshButton.disabled = isLoading;
+    refreshButton.classList.toggle("refresh_loading", isLoading);
 
     if (isLoading) {
         refreshButton.querySelector(".refresh_button_text").textContent = "Refreshing...";
@@ -682,6 +685,10 @@ async function initializeDashboard() {
 
         setupSearchInput();
 
+        setupQualifiedFilter();
+
+        setupMobileMenuEvents();
+
         setupNavigationEvents();
 
         setupRefreshButton();
@@ -740,63 +747,111 @@ function removeSearchActive() {
     searchInput.classList.remove("search_active");
 }
 
+// Lee si el checkbox "Qualified only" esta activo.
+function isQualifiedFilterActive() {
+    const qualifiedFilter = getElementById(
+        "qualified_filter_checkbox"
+    );
+
+    if (!qualifiedFilter) {
+        return false;
+    }
+
+    return qualifiedFilter.checked;
+}
+
+
+// Actualiza el estilo visual del filtro de clasificados.
+function setQualifiedFilterActive() {
+    const qualifiedFilter = getElementById(
+        "qualified_filter_checkbox"
+    );
+
+    if (!qualifiedFilter) {
+        return;
+    }
+
+    const filterContainer = qualifiedFilter.closest(
+        ".qualified_filter_container"
+    );
+
+    if (!filterContainer) {
+        return;
+    }
+
+    if (qualifiedFilter.checked) {
+        filterContainer.classList.add("qualified_filter_active");
+    } else {
+        filterContainer.classList.remove("qualified_filter_active");
+    }
+}
+
 /* ======================================================
     FILTRO DE EUIPOS
 ====================================================== */
 
-// Filtra los equipos usando el texto
-// escrito por el usuario.
-async function filterStandings() {
+// Revisa si el nombre del equipo coincide con el texto del buscador.
+function teamMatchesSearch(team, searchText) {
+    const teamName = team.team
+        .toLowerCase();
 
-    // Leemos el texto del buscador.
+    return teamName.includes(searchText);
+}
+
+
+// Revisa si el equipo debe mostrarse cuando activamos "Qualified only".
+function teamMatchesQualifiedFilter(team, onlyQualified) {
+    if (!onlyQualified) {
+        return true;
+    }
+
+    return Boolean(team.qualification);
+}
+
+
+// Aplica todos los filtros activos sobre los datos ya cargados.
+function getFilteredStandings() {
     const searchText = getSearchText()
         .trim()
         .toLowerCase();
 
-    // Si está vacío,
-    // mostramos todos los equipos.
-    if (searchText === "") {
-
+    if (searchText) {
+        setSearchActive();
+    } else {
         removeSearchActive();
-
-        await animateTableUpdate(function () {
-            renderStandingsTable(
-                standingsData
-            );
-        });
-
-        return;
-
     }
 
-    setSearchActive();
-
-    // Array donde guardaremos
-    // los equipos encontrados.
+    const onlyQualified = isQualifiedFilterActive();
     const filteredTeams = [];
 
-    // Recorremos todos los equipos.
     for (const team of standingsData) {
+        const matchesSearch = teamMatchesSearch(
+            team,
+            searchText
+        );
 
-        // Convertimos el nombre del equipo
-        // a minúsculas.
-        const teamName = team.team
-            .toLowerCase();
+        const matchesQualified = teamMatchesQualifiedFilter(
+            team,
+            onlyQualified
+        );
 
-        // Si el nombre contiene el texto buscado...
-        if (teamName.includes(searchText)) {
-
+        if (matchesSearch && matchesQualified) {
             filteredTeams.push(team);
-
         }
-
     }
 
-    // Pintamos únicamente
-    // los equipos encontrados.
+    return filteredTeams;
+}
+
+
+// Filtra los equipos usando el texto
+// escrito por el usuario.
+async function filterStandings() {
+    setQualifiedFilterActive();
+
     await animateTableUpdate(function () {
         renderStandingsTable(
-            filteredTeams
+            getFilteredStandings()
         );
     });
 
@@ -827,9 +882,96 @@ function setupSearchInput() {
 
 }
 
+// Activa el checkbox "Qualified only".
+//
+// HTML:
+//
+// <input id="qualified_filter_checkbox">
+function setupQualifiedFilter() {
+    const qualifiedFilter = getElementById(
+        "qualified_filter_checkbox"
+    );
+
+    if (!qualifiedFilter) {
+        return;
+    }
+
+    setQualifiedFilterActive();
+
+    qualifiedFilter.addEventListener(
+        "change",
+        filterStandings
+    );
+
+}
+
 /* ======================================================
     UX NAVIGATION
 ====================================================== */
+
+// Abre el menu hamburguesa en mobile/tablet.
+function openMobileMenu() {
+    const menuButton = getElementById("mobile_menu_button");
+
+    document.body.classList.add("mobile_menu_open");
+
+    if (menuButton) {
+        menuButton.setAttribute("aria-expanded", "true");
+    }
+}
+
+
+// Cierra el menu hamburguesa en mobile/tablet.
+function closeMobileMenu() {
+    const menuButton = getElementById("mobile_menu_button");
+
+    document.body.classList.remove("mobile_menu_open");
+
+    if (menuButton) {
+        menuButton.setAttribute("aria-expanded", "false");
+    }
+}
+
+
+// Alterna entre abrir y cerrar el menu hamburguesa.
+function toggleMobileMenu() {
+    if (document.body.classList.contains("mobile_menu_open")) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+}
+
+
+// Conecta el boton hamburguesa, el overlay y la tecla Escape.
+function setupMobileMenuEvents() {
+    const menuButton = getElementById("mobile_menu_button");
+    const menuOverlay = getElementById("mobile_menu_overlay");
+
+    if (menuButton) {
+        menuButton.addEventListener(
+            "click",
+            toggleMobileMenu
+        );
+    }
+
+    if (menuOverlay) {
+        menuOverlay.addEventListener(
+            "click",
+            closeMobileMenu
+        );
+    }
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Escape") {
+                closeMobileMenu();
+            }
+        }
+    );
+}
+
 
 // Devuelve el boton principal del sidebar segun la vista.
 function getButtonByView(viewName) {
@@ -949,6 +1091,7 @@ function navigateToSection(viewName) {
 
     setActiveNavigation(viewName);
     focusSection(section);
+    closeMobileMenu();
 
 }
 
