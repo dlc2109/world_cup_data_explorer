@@ -28,13 +28,23 @@
 
             <div class="sidebar_header_container">
 
-                <h1 class="sidebar_title">
-                    World Cup
-                </h1>
+                <div class="sidebar_brand_container">
+                    <img
+                        class="sidebar_brand_image"
+                        src="{{ url_for('static', filename='images/copa.png') }}"
+                        alt="World Cup trophy"
+                    >
 
-                <p class="sidebar_subtitle">
-                    Data Explorer
-                </p>
+                    <div class="sidebar_brand_text_container">
+                        <h1 class="sidebar_title">
+                            World Cup
+                        </h1>
+
+                        <p class="sidebar_subtitle">
+                            Data Explorer 2026
+                        </p>
+                    </div>
+                </div>
 
             </div>
 
@@ -130,8 +140,8 @@
                         </h2>
 
                         <p class="hero_description">
-                            Explore standings, statistics and team performance using data
-                            extracted with Web Scraping, SQLite and Flask.
+                            Explora posiciones, estadísticas y rendimiento de selecciones usando datos
+                            extraídos con Web Scraping, SQLite y Flask.
                         </p>
 
                     </div>
@@ -466,6 +476,20 @@
                             autocomplete="off"
                         >
 
+                        <button id="refresh_data_button" class="refresh_data_button" type="button">
+                            <span class="refresh_button_icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 6v5h-5" />
+                                    <path d="M4 18v-5h5" />
+                                    <path d="M18.5 9A7 7 0 0 0 6.2 5.8L4 8" />
+                                    <path d="M5.5 15A7 7 0 0 0 17.8 18.2L20 16" />
+                                </svg>
+                            </span>
+                            <span class="refresh_button_text">
+                                Refresh
+                            </span>
+                        </button>
+
                     </div>
 
                 </div>
@@ -506,40 +530,68 @@
 
             </section>
 
-            <section class="controls_section" id="filters_container">
-               <h2>Filtros de Exploración</h2>
-               <div class="filter_buttons">
-                <button onclick="loadStandings()">Ver Tabla General</button>
-                <button onclick="loadQualified()">Ver Clasificados</button>
-               </div>
-               <div class="search_box">
-                   <input type="text" id="teamSearch" placeholder="Buscar equipo..." onkeyup="searchTeam()">
-               </div>
-           </section>
+     
+            <section class="controls_section" id="filters_container" style="margin-top: var(--space-40);">
+                <div class="section_header_container">
+                    <p class="section_subtitle">Fases Eliminatorias</p>
+                    <h2 class="section_title">Knockout Stage</h2>
+                </div>
 
-          <section class="visuals_section" id="visuals_container">
-               <div class="animation_wrapper">
-                 <h2>Logo Copa del Mundo</h2>
-                 <img src="{{ url_for('static', filename='images/logowc.jpg') }}" class="animate-logo" alt="Logo Mundial">
-                 <h2>Trofeo Copa del Mundo 2026 </h2>
-                 <img src="{{ url_for('static', filename='images/world_cup_trophy.png') }}" class="animate-trophy" alt="Trofeo Mundial">
-               </div>
-          </section>
+                <div class="standings_controls_container">
+                    <label for="phase-select">Buscar por Fase:</label>
+                    <select id="phase-select" class="standings_filter_select">
+                        <option value="ALL">Todas las fases</option>
+                        <option value="Round of 32">Dieciseisavos (Round of 32)</option>
+                        <option value="Round of 16">Octavos de Final</option>
+                        <option value="Quarter-Finals">Cuartos de Final</option>
+                        <option value="Semi-final">Semifinales</option>
+                    </select>
 
-          <button id="btn-qualified" onclick="filterData('qualified')">Ver Clasificados</button> <!-- Añadidura de botón para ver los clasificados -->>
-          
-           <table>
-             <thead>
-                <tr>
-                    <th>Equipo</th>
-                    <th>Puntos</th>
-                    <th>Posición</th>
-               </tr>
-            </thead>
-            <tbody id="table-body">
-            </tbody>
-          </table>
+                    <button id="btn-top-goles" class="refresh_data_button" type="button">
+                        Partidos con más Goles
+                    </button>
+                </div>
+
+                <div id="knockout-matches-container" class="matches-grid" style="margin-top: var(--space-24);">
+                    
+                </div>
+            </section>
+
+            
+            <section class="visuals_section" id="visuals_container" style="margin-top: var(--space-40); text-align: center;">
+                <div class="animation_wrapper">
+                    <h2>Multimedia Mundial 2026</h2>
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                        <img src="{{ url_for('static', filename='images/logowc.jpg') }}" class="animate-logo" alt="Logo Mundial" style="max-width: 200px; border-radius: var(--radius-panel);">
+                        <img src="{{ url_for('static', filename='images/world_cup_trophy.png') }}" class="animate-trophy" alt="Trofeo Mundial" style="max-width: 200px; border-radius: var(--radius-panel);">
+                    </div>
+                </div>
+            </section>
+
         </main>
+
+    </div>
+
+    <div class="standings_controls_container" style="margin-top: var(--space-16);">
+    <label for="phase-select" class="standings_filter_label">Buscar por Fase:</label>
+    <select id="phase-select" class="standings_filter_select">
+        <option value="ALL">Todas las fases</option>
+        <option value="Round of 32">Dieciseisavos (Round of 32)</option>
+        <option value="Round of 16">Octavos de Final</option>
+        <option value="Quarter-Finals">Cuartos de Final</option>
+        <option value="Semi-final">Semifinales</option>
+    </select>
+
+   
+    <input id="knockout_team_search" class="team_search_input" type="search" placeholder="Buscar equipo en fase..." autocomplete="off">
+
+    
+    <button id="btn-top-goles" class="refresh_data_button" type="button">
+        Partidos con más Goles
+    </button>
+    </div>
+
+    
 
     </div>
 
