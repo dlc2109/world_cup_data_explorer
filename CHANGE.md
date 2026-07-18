@@ -18,4 +18,6 @@
 
 No cuento las veces que me duelen los focking ojos debido a un 403 Forbidden, 404 Not Found, ECONNREFUSED y 400 Bad Request
 
-lo dejaré con una foto cuando lo actualice en github por pura paja
+soy literalmente este meme desde el míercoles, aunque todavía está incompleto y seguramente lo termine esta semana si me da chance
+
+<img width="576" height="563" alt="image" src="https://github.com/user-attachments/assets/1fd77ca6-7230-4072-87de-fb7a04c9836b" />
