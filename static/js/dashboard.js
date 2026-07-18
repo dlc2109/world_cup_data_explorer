@@ -25,6 +25,7 @@
 
 const STATISTICS_API_URL = "/api/statistics";
 const STANDINGS_API_URL = "/api/standings";
+const REFRESH_API_URL = "/api/refresh";
 const EMPTY_VALUE = "--";
 const TABLE_COLUMN_COUNT = 11;
 
@@ -585,6 +586,83 @@ function updateStatisticsCards(statistics) {
 
 }
 
+/* ======================================================
+    REFRESH DATA
+====================================================== */
+
+// Llama a Flask usando POST /api/refresh.
+async function refreshData() {
+    const response = await fetch(
+        REFRESH_API_URL,
+        {
+            method: "POST",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Error HTTP al refrescar datos: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+
+// Cambia el texto del boton y lo desactiva mientras Flask actualiza datos.
+function setRefreshButtonLoading(isLoading) {
+    const refreshButton = getElementById("refresh_data_button");
+
+    if (!refreshButton) {
+        return;
+    }
+
+    refreshButton.disabled = isLoading;
+
+    if (isLoading) {
+        refreshButton.querySelector(".refresh_button_text").textContent = "Refreshing...";
+    } else {
+        refreshButton.querySelector(".refresh_button_text").textContent = "Refresh";
+    }
+}
+
+
+// Vuelve a pedir statistics y standings despues de actualizar SQLite.
+async function reloadDashboardData() {
+    const statistics = await fetchStatistics();
+    updateStatisticsCards(statistics);
+
+    await loadStandings();
+}
+
+
+// Ejecuta el refresh completo desde el boton del frontend.
+async function handleRefreshClick() {
+    try {
+        setRefreshButtonLoading(true);
+
+        await refreshData();
+        await reloadDashboardData();
+    } catch (error) {
+        console.error("No se pudieron refrescar los datos:", error);
+    } finally {
+        setRefreshButtonLoading(false);
+    }
+}
+
+
+// Conecta el boton Refresh con POST /api/refresh.
+function setupRefreshButton() {
+    const refreshButton = getElementById("refresh_data_button");
+
+    if (!refreshButton) {
+        return;
+    }
+
+    refreshButton.addEventListener(
+        "click",
+        handleRefreshClick
+    );
+}
+
 
 /* ======================================================
     INICIO DEL DASHBOARD
@@ -605,6 +683,8 @@ async function initializeDashboard() {
         setupSearchInput();
 
         setupNavigationEvents();
+
+        setupRefreshButton();
 
     } catch (error) {
 
@@ -929,48 +1009,112 @@ function setupNavigationEvents() {
 
 }
 
-//funcion de la ruta de clasificados
-function filterData(type){
-    alert("Entre a la función")
-    console.log("Tipo recibido:", type)
-    let url = type === 'qualified' ? '/api/standings?filter=qualified' : '/api/standings' ;
-    fetch(url)
-    .then(res => res.json())
-    .then(data => {
-        console.log("Datos recibidos del servidor:", data); //prueba por si el backend responde
-        renderTable(data);
-    })
-    .catch(err => console.error("Error al obtenedor los datos:", err)); //manejo de erorres, es como try/except, pero en este caso en lugar de ser try/except, es try/catch
-}
+//necesitamos ahora crear todo lo posible para el knockout json
 
-function renderTable(data) {
-    const tableBody = document.getElementById('table-body');
-    
-   
-    tableBody.innerHTML = '';
-    
-  
-    if (data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="3">No se encontraron resultados</td></tr>';
+let allMatches = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof initializeDashboard === 'function') {
+        initializeDashboard();
+    }
+    fetch('/static/knockout.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudo cargar el archivo JSON de eliminatorias");
+            }
+            return response.json();
+        })
+        .then(data => {
+            allMatches = data; 
+            renderMatches(allMatches); 
+        })
+        .catch(error => console.error("Error cargando eliminatorias:", error));
+
+    const phaseSelect = document.getElementById('phase-select');
+    if (phaseSelect) {
+        phaseSelect.addEventListener('change', (e) => {
+            const selectedPhase = e.target.value;
+            const filtered = selectedPhase === "ALL" 
+                ? allMatches 
+                : allMatches.filter(match => match.ko_round === selectedPhase);
+            renderMatches(filtered);
+        });
+    }
+
+    const btnTopGoles = document.getElementById('btn-top-goles');
+    if (btnTopGoles) {
+        btnTopGoles.addEventListener('click', () => {
+            const selectedPhase = phaseSelect ? phaseSelect.value : "ALL";
+            let matchesToOrder = selectedPhase === "ALL" 
+                ? [...allMatches] 
+                : allMatches.filter(m => m.ko_round === selectedPhase);
+            
+            matchesToOrder.sort((a, b) => {
+                const totalA = (a.local_goals || 0) + (a.away_goals || 0);
+                const totalB = (b.local_goals || 0) + (b.away_goals || 0);
+                return totalB - totalA;
+            });
+
+            renderMatches(matchesToOrder);
+        });
+    }
+});
+
+function renderMatches(matches) {
+    const container = document.getElementById('knockout-matches-container');
+    if (!container) return;   
+    container.innerHTML = ''; 
+    if (matches.length === 0) {
+        container.innerHTML = '<p class="no-matches-msg">No hay partidos registrados en esta fase.</p>';
         return;
     }
-    
-    
-    data.forEach(item => {
-        
-        const row = `<tr>
-            <td>${item.team}</td>
-            <td>${item.points}</td>
-            <td>${item.position}</td>
-        </tr>`;
-        tableBody.innerHTML += row;
+
+    matches.forEach(match => {
+        const localGoals = match.local_goals || 0;
+        const awayGoals = match.away_goals || 0;
+        const totalGoles = localGoals + awayGoals;
+        const localTeam = match.local_TEAM || match.local_team || 'Por definir';
+        const awayTeam = match.away_TEAM || match.away_team || 'Por definir';
+
+        const card = document.createElement('div');
+        card.className = `match-card ${totalGoles >= 3 ? 'high-scoring' : 'low-scoring'}`;
+
+        card.innerHTML = `
+            <h3>${match.ko_round || 'Fase Eliminatoria'}</h3>
+            <div class="match-details">
+                <span class="team-name">${localTeam}</span>
+                <span class="score">${localGoals} - ${awayGoals}</span>
+                <span class="team-name">${awayTeam}</span>
+            </div>
+            <div class="match-footer">
+                <div>Goles Totales: <strong>${totalGoles}</strong></div>
+                ${match.penalties && match.penalties !== 'No penalties' ? `<div>Penales: <strong>${match.penalties}</strong></div>` : ''}
+                <div>Estado: <span>${match.state || 'Finalizado'}</span></div>
+            </div>
+        `;
+        container.appendChild(card);
     });
 }
 
+const knockoutSearchInput = document.getElementById('knockout_team_search');
+const phaseSelectEl = document.getElementById('phase-select');
 
+if (knockoutSearchInput) {
+    knockoutSearchInput.addEventListener('input', () => {
+        const query = knockoutSearchInput.value.toLowerCase().trim();
+        const selectedPhase = phaseSelectEl ? phaseSelectEl.value : "ALL";
 
-// Espera a que el HTML exista antes de buscar IDs.
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeDashboard
-)
+        const filteredMatches = allMatches.filter(match => {
+            const matchesPhase = selectedPhase === "ALL" || match.ko_round === selectedPhase; 
+            const localTeam = (match.local_TEAM || match.local_team || '').toLowerCase();
+            const awayTeam = (match.away_TEAM || match.away_team || '').toLowerCase();
+            const matchesTeam = localTeam.includes(query) || awayTeam.includes(query);
+
+            return matchesPhase && matchesTeam;
+        });
+
+        renderMatches(filteredMatches);
+    });
+}
+
+//1120 líneas de codigo, estamos mentalmente mal
